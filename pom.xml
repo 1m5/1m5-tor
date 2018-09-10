@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>io.onemfive</groupId>
-	<artifactId>tor</artifactId>
+	<artifactId>tor-client</artifactId>
 	<version>0.5.2-SNAPSHOT</version>
 
 	<packaging>jar</packaging>
@@ -14,9 +14,9 @@
 		<java.version>1.7</java.version>
 	</properties>
 
-	<name>1m5-tor</name>
+	<name>1m5-tor-client</name>
 	<url>https://1m5.io</url>
-	<description>Invisible Matrix Services Tor Library</description>
+	<description>Invisible Matrix Services Tor Client Library</description>
 	<inceptionYear>2017</inceptionYear>
 	<organization>
 		<name>1M5</name>
@@ -37,28 +37,28 @@
 		</developer>
 	</developers>
 	<scm>
-		<connection>scm:git@github.com/1m5/1m5-tor</connection>
-		<developerConnection>scm:git@github.com/1m5/1m5-tor</developerConnection>
-		<url>git@github.com/1m5/1m5-tor</url>
+		<connection>scm:git@github.com/1m5/1m5-tor-client</connection>
+		<developerConnection>scm:git@github.com/1m5/1m5-tor-client</developerConnection>
+		<url>git@github.com/1m5/1m5-tor-client</url>
 	</scm>
 
 	<profiles>
 		<profile>
 			<id>Development</id>
 			<properties>
-				<logfile>/1m5/logs/tor.log</logfile>
+				<logfile>/1m5/logs/tor-client.log</logfile>
 			</properties>
 		</profile>
 		<profile>
 			<id>QA</id>
 			<properties>
-				<logfile>/1m5/logs/tor.log</logfile>
+				<logfile>/1m5/logs/tor-client.log</logfile>
 			</properties>
 		</profile>
 		<profile>
 			<id>Production</id>
 			<properties>
-				<logfile>/1m5/logs/tor.log</logfile>
+				<logfile>/1m5/logs/tor-client.log</logfile>
 			</properties>
 		</profile>
 	</profiles>
@@ -73,7 +73,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.onemfive</groupId>
-			<artifactId>clearnet</artifactId>
+			<artifactId>clearnet-client</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<!-- Test -->
