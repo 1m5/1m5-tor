@@ -26,6 +26,8 @@ public final class TorClientSensor extends ClearnetClientSensor {
 
     private static final Logger LOG = Logger.getLogger(TorClientSensor.class.getName());
 
+    public TorClientSensor() {super();}
+
     public TorClientSensor(SensorsService sensorsService, Envelope.Sensitivity sensitivity, Integer priority) {
         super(sensorsService, sensitivity, priority);
         proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("127.0.0.1",9150));
