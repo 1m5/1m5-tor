@@ -12,18 +12,16 @@ import javax.net.SocketFactory;
 
 import io.onemfive.tor.client.core.Tor;
 import io.onemfive.tor.client.core.TorClient;
-import io.onemfive.tor.client.core.Tor;
-import io.onemfive.tor.client.core.TorClient;
 
-public class OrchidSocketFactory extends SocketFactory {
+public class TorSocketFactory extends SocketFactory {
 	private final TorClient torClient;
 	private final boolean exceptionOnLocalBind;
 	
-	public OrchidSocketFactory(TorClient torClient) {
+	public TorSocketFactory(TorClient torClient) {
 		this(torClient, true);
 	}
 
-	public OrchidSocketFactory(TorClient torClient, boolean exceptionOnLocalBind) {
+	public TorSocketFactory(TorClient torClient, boolean exceptionOnLocalBind) {
 		this.torClient = torClient;
 		this.exceptionOnLocalBind = exceptionOnLocalBind;
 	}
@@ -71,7 +69,7 @@ public class OrchidSocketFactory extends SocketFactory {
 	}
 	
 	private Socket createSocketInstance() throws SocketException {
-		final OrchidSocketImpl impl = new OrchidSocketImpl(torClient);
+		final TorSocketImpl impl = new TorSocketImpl(torClient);
 		if(Tor.isAndroidRuntime()) {
 			return new AndroidSocket(impl);
 		} else {

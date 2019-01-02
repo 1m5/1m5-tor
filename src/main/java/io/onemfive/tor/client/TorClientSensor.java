@@ -2,6 +2,7 @@ package io.onemfive.tor.client;
 
 import io.onemfive.data.Envelope;
 import io.onemfive.sensors.BaseSensor;
+import io.onemfive.sensors.SensorStatus;
 import io.onemfive.tor.client.core.TorClient;
 import io.onemfive.tor.client.core.TorInitializationListener;
 
@@ -14,7 +15,7 @@ import java.util.logging.Logger;
  *
  * @author objectorange
  */
-public final class TorClientSensor extends BaseSensor {
+public final class TorClientSensor extends BaseSensor implements TorInitializationListener {
 
     private static final Logger LOG = Logger.getLogger(TorClientSensor.class.getName());
 
@@ -50,7 +51,8 @@ public final class TorClientSensor extends BaseSensor {
     @Override
     public boolean start(Properties properties) {
         LOG.info("Starting...");
-        client.addInitializationListener(createInitalizationListner());
+        updateStatus(SensorStatus.STARTING);
+        client.addInitializationListener(this);
         client.start();
         client.enableSocksListener();
         return true;
@@ -74,30 +76,52 @@ public final class TorClientSensor extends BaseSensor {
 
     @Override
     public boolean shutdown() {
-
-        return false;
+        updateStatus(SensorStatus.SHUTTING_DOWN);
+        client.stop();
+        updateStatus(SensorStatus.SHUTDOWN);
+        return true;
     }
 
     @Override
     public boolean gracefulShutdown() {
-        return false;
+        updateStatus(SensorStatus.GRACEFULLY_SHUTTING_DOWN);
+        client.stop();
+        updateStatus(SensorStatus.GRACEFULLY_SHUTDOWN);
+        return true;
     }
 
-    private static TorInitializationListener createInitalizationListner() {
-        return new TorInitializationListener() {
 
-            public void initializationProgress(String message, int percent) {
-                System.out.println(">>> [ "+ percent + "% ]: "+ message);
-            }
+    public void initializationProgress(String message, int percent) {
+        updateStatus(SensorStatus.NETWORK_WARMUP);
+        System.out.println(">>> [ "+ percent + "% ]: "+ message);
+    }
 
-            public void initializationCompleted() {
-                System.out.println("Tor is ready to go!");
-            }
-        };
+    public void initializationCompleted() {
+        updateStatus(SensorStatus.NETWORK_CONNECTED);
+        System.out.println("Tor is ready to go!");
     }
 
     public static void main(String[] args) {
         TorClientSensor sensor = new TorClientSensor();
         sensor.start(null);
+        while(sensor.getStatus()==SensorStatus.STARTING || sensor.getStatus()==SensorStatus.NETWORK_WARMUP) {
+            LOG.info("...waiting on startup...");
+            try {
+                synchronized (sensor) {
+                    sensor.wait(1 * 60 * 1000);
+                }
+            } catch (InterruptedException ex) {
+            }
+        }
+
+        while(sensor.getStatus()!=SensorStatus.SHUTTING_DOWN || sensor.getStatus()!=SensorStatus.GRACEFULLY_SHUTTING_DOWN) {
+            LOG.info("...running...");
+            try {
+                synchronized (sensor) {
+                    sensor.wait(1 * 60 * 1000);
+                }
+            } catch (InterruptedException ex) {
+            }
+        }
     }
 }

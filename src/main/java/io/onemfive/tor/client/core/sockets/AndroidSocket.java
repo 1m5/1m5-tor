@@ -11,11 +11,11 @@ public class AndroidSocket extends Socket {
 	private final static Logger logger = Logger.getLogger(AndroidSocket.class.getName());
 	
 	private final Field isConnectedField;
-	private final OrchidSocketImpl impl;
+	private final TorSocketImpl impl;
 	private final Object lock = new Object();
 	private boolean isSocketConnected;
 	
-	AndroidSocket(OrchidSocketImpl impl) throws SocketException {
+	AndroidSocket(TorSocketImpl impl) throws SocketException {
 		super(impl);
 		this.impl = impl;
 		this.isConnectedField = getField("isConnected");

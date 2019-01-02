@@ -76,10 +76,10 @@ public class DirectoryImpl implements Directory {
 		stateFile = new StateFile(store, this);
 		microdescriptorCache = createMicrodescriptorCache(store);
 		basicDescriptorCache = createBasicDescriptorCache(store);	
-		routersByIdentity = new HashMap<HexDigest, RouterImpl>();
-		routersByNickname = new HashMap<String, RouterImpl>();
-		directoryCaches = new RandomSet<RouterImpl>();
-		requiredCertificates = new HashSet<ConsensusDocument.RequiredCertificate>();
+		routersByIdentity = new HashMap<>();
+		routersByNickname = new HashMap<>();
+		directoryCaches = new RandomSet<>();
+		requiredCertificates = new HashSet<>();
 		consensusChangedManager = new EventManager();
 		random = new TorRandom();
 	}

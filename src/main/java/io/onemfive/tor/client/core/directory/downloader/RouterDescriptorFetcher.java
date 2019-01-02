@@ -17,7 +17,7 @@ public class RouterDescriptorFetcher extends DocumentFetcher<RouterDescriptor>{
 	private final List<HexDigest> fingerprints;
 	
 	public RouterDescriptorFetcher(Collection<HexDigest> fingerprints) {
-		this.fingerprints = new ArrayList<HexDigest>(fingerprints);
+		this.fingerprints = new ArrayList<>(fingerprints);
 	}
 
 	@Override

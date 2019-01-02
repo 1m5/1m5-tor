@@ -24,13 +24,13 @@ import java.net.SocketTimeoutException;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
 
-public class OrchidSocketImpl extends SocketImpl {
+public class TorSocketImpl extends SocketImpl {
 	private final TorClient torClient;
 
 	private Lock streamLock = Threading.lock("stream");
 	private Stream stream;
 	
-	OrchidSocketImpl(TorClient torClient) {
+	TorSocketImpl(TorClient torClient) {
 		this.torClient = torClient;
 		this.fd = new FileDescriptor();
 	}

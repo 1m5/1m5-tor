@@ -34,7 +34,7 @@ public class Tor {
 	public final static int BOOTSTRAP_STATUS_DONE = 100;
 	
 	
-	private final static String implementation = "Orchid";
+	private final static String implementation = "1M5-Tor";
 	private final static String version = "1.0.0";
 	
 	private final static Charset defaultCharset = createDefaultCharset();
@@ -85,9 +85,7 @@ public class Tor {
 	
 	/**
 	 * Create and return a new <code>TorConfig</code> instance.
-	 * 
-	 * @param logManager This is a required dependency.  You must create a <code>LogManager</code>
-	 *                   before calling this method to create a <code>TorConfig</code>
+	 *
 	 * @return A new <code>TorConfig</code> instance.
 	 * @see TorConfig
 	 */
@@ -133,8 +131,8 @@ public class Tor {
 
 	/**
 	 * Create and return a new <code>SocksPortListener</code> instance.
-	 * 
-	 * @param logManager This is a required dependency.  You must create a <code>LogManager</code>
+	 *
+	 * @param config This is a required dependency.  You must create a <code>LogManager</code>
 	 *                   before calling this method to create a <code>SocksPortListener</code>.
 	 * @param circuitManager This is a required dependency.  You must create a <code>CircuitManager</code>
 	 *                       before calling this method to create a <code>SocksPortListener</code>.

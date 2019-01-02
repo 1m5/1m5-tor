@@ -14,7 +14,7 @@ import io.onemfive.tor.client.core.circuits.TorInitializationTracker;
 import io.onemfive.tor.client.core.crypto.PRNGFixes;
 import io.onemfive.tor.client.core.dashboard.Dashboard;
 import io.onemfive.tor.client.core.directory.downloader.DirectoryDownloaderImpl;
-import io.onemfive.tor.client.core.sockets.OrchidSocketFactory;
+import io.onemfive.tor.client.core.sockets.TorSocketFactory;
 
 /**
  * This class is the main entry-point for running a Tor proxy
@@ -62,7 +62,7 @@ public class TorClient {
 	}
 
 	public SocketFactory getSocketFactory() {
-		return new OrchidSocketFactory(this);
+		return new TorSocketFactory(this);
 	}
 
 	/**
@@ -75,7 +75,7 @@ public class TorClient {
 		if(isStopped) {
 			throw new IllegalStateException("Cannot restart a TorClient instance.  Create a new instance instead.");
 		}
-		logger.info("Starting Orchid (version: "+ Tor.getFullVersion() +")");
+		logger.info("Starting Tor Client (version: "+ Tor.getFullVersion() +")");
 		verifyUnlimitedStrengthPolicyInstalled();
 		directoryDownloader.start(directory);
 		circuitManager.startBuildingCircuits();
