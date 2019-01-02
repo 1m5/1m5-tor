@@ -1,9 +1,9 @@
 package io.onemfive.tor.client;
 
-import com.subgraph.orchid.TorClient;
-import com.subgraph.orchid.TorInitializationListener;
 import io.onemfive.data.Envelope;
 import io.onemfive.sensors.BaseSensor;
+import io.onemfive.tor.client.core.TorClient;
+import io.onemfive.tor.client.core.TorInitializationListener;
 
 import java.util.Properties;
 import java.util.logging.Logger;
