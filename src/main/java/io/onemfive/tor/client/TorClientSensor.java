@@ -1,39 +1,27 @@
 package io.onemfive.tor.client;
 
-import io.onemfive.clearnet.client.ClearnetClientSensor;
-import io.onemfive.sensors.SensorsService;
+import com.subgraph.orchid.TorClient;
+import com.subgraph.orchid.TorInitializationListener;
 import io.onemfive.data.Envelope;
-import okhttp3.CipherSuite;
-import okhttp3.ConnectionSpec;
-import okhttp3.OkHttpClient;
-import okhttp3.TlsVersion;
+import io.onemfive.sensors.BaseSensor;
 
-import javax.net.ssl.SSLContext;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.util.Collections;
 import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
- * Tor Client Configuration: Install Tor Browser (https://www.torproject.org/projects/torbrowser.html.en)
- *
- * Tor Hidden Service Configuration: https://www.torproject.org/docs/tor-onion-service.html.en
+ * https://www.torproject.org/
+ * https://subgraph.com/orchid/index.en.html
  *
  * @author objectorange
  */
-public final class TorClientSensor extends ClearnetClientSensor {
+public final class TorClientSensor extends BaseSensor {
 
     private static final Logger LOG = Logger.getLogger(TorClientSensor.class.getName());
 
-    public TorClientSensor() {super();}
+    private TorClient client = new TorClient();
 
-    public TorClientSensor(SensorsService sensorsService, Envelope.Sensitivity sensitivity, Integer priority) {
-        super(sensorsService, sensitivity, priority);
-        proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("127.0.0.1",9150));
-    }
+    public TorClientSensor() {}
 
-    @Override
     public String[] getOperationEndsWith() {
         return new String[]{".onion"};
     }
@@ -48,63 +36,68 @@ public final class TorClientSensor extends ClearnetClientSensor {
         return new String[]{".onion"};
     }
 
+
+    @Override
+    public boolean send(Envelope envelope) {
+        return false;
+    }
+
+    @Override
+    public boolean reply(Envelope envelope) {
+        return false;
+    }
+
     @Override
     public boolean start(Properties properties) {
         LOG.info("Starting...");
-
-        httpSpec = new ConnectionSpec
-                .Builder(ConnectionSpec.CLEARTEXT)
-                .build();
-        httpClient = new OkHttpClient.Builder()
-                .connectionSpecs(Collections.singletonList(httpSpec))
-                .retryOnConnectionFailure(true)
-                .followRedirects(true)
-                .proxy(proxy)
-                .build();
-
-        System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2,TLSv1.3");
-        SSLContext sc = null;
-        try {
-            sc = SSLContext.getInstance("TLS");
-            sc.init(null, trustAllCerts, new java.security.SecureRandom());
-
-            httpsCompatibleSpec = new ConnectionSpec
-                    .Builder(ConnectionSpec.COMPATIBLE_TLS)
-//                    .supportsTlsExtensions(true)
-//                    .allEnabledTlsVersions()
-//                    .allEnabledCipherSuites()
-                    .build();
-
-            httpsCompatibleClient = new OkHttpClient.Builder()
-                    .sslSocketFactory(sc.getSocketFactory(), x509TrustManager)
-                    .hostnameVerifier(hostnameVerifier)
-                    .proxy(proxy)
-                    .build();
-
-            httpsStrongSpec = new ConnectionSpec
-                    .Builder(ConnectionSpec.MODERN_TLS)
-                    .tlsVersions(TlsVersion.TLS_1_2, TlsVersion.TLS_1_3)
-                    .cipherSuites(
-                            CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
-                            CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
-                            CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256)
-                    .build();
-
-            httpsStrongClient = new OkHttpClient.Builder()
-                    .connectionSpecs(Collections.singletonList(httpsStrongSpec))
-                    .retryOnConnectionFailure(true)
-                    .followSslRedirects(true)
-                    .sslSocketFactory(sc.getSocketFactory(), x509TrustManager)
-                    .hostnameVerifier(hostnameVerifier)
-                    .proxy(proxy)
-                    .build();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            LOG.warning(e.getLocalizedMessage());
-        }
-
+        client.addInitializationListener(createInitalizationListner());
+        client.start();
+        client.enableSocksListener();
         return true;
     }
 
+
+    @Override
+    public boolean pause() {
+        return false;
+    }
+
+    @Override
+    public boolean unpause() {
+        return false;
+    }
+
+    @Override
+    public boolean restart() {
+        return false;
+    }
+
+    @Override
+    public boolean shutdown() {
+
+        return false;
+    }
+
+    @Override
+    public boolean gracefulShutdown() {
+        return false;
+    }
+
+    private static TorInitializationListener createInitalizationListner() {
+        return new TorInitializationListener() {
+
+            public void initializationProgress(String message, int percent) {
+                System.out.println(">>> [ "+ percent + "% ]: "+ message);
+            }
+
+            public void initializationCompleted() {
+                System.out.println("Tor is ready to go!");
+            }
+        };
+    }
+
+    public static void main(String[] args) {
+        TorClientSensor sensor = new TorClientSensor();
+        sensor.start(null);
+    }
 }

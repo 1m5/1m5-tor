@@ -46,19 +46,19 @@
 		<profile>
 			<id>Development</id>
 			<properties>
-				<logfile>/1m5/logs/tor-client.log</logfile>
+
 			</properties>
 		</profile>
 		<profile>
 			<id>QA</id>
 			<properties>
-				<logfile>/1m5/logs/tor-client.log</logfile>
+
 			</properties>
 		</profile>
 		<profile>
 			<id>Production</id>
 			<properties>
-				<logfile>/1m5/logs/tor-client.log</logfile>
+
 			</properties>
 		</profile>
 	</profiles>
@@ -73,8 +73,13 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.onemfive</groupId>
-			<artifactId>clearnet-client</artifactId>
+			<artifactId>sensors</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.subgraph</groupId>
+			<artifactId>orchid</artifactId>
+			<version>1.0.0</version>
 		</dependency>
 		<!-- Test -->
 		<dependency>
