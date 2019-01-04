@@ -13,7 +13,6 @@ import io.onemfive.tor.client.core.Router;
 import io.onemfive.tor.client.core.Tor;
 import io.onemfive.tor.client.core.TorException;
 import io.onemfive.tor.client.core.circuits.path.PathSelectionFailedException;
-import io.onemfive.tor.client.core.*;
 
 public class CircuitBuildTask implements Runnable {
 	private final static Logger logger = Logger.getLogger(CircuitBuildTask.class.getName());
@@ -45,9 +44,34 @@ public class CircuitBuildTask implements Runnable {
 			if(logger.isLoggable(Level.FINE)) {
 				logger.fine("Opening a new circuit to "+ pathToString(creationRequest));
 			}
+
+			// Open Connection
 			firstRouter = creationRequest.getPathElement(0);
-			openEntryNodeConnection(firstRouter);
-			buildCircuit(firstRouter);
+			connection = connectionCache.getConnectionTo(firstRouter, creationRequest.isDirectoryCircuit());
+			circuit.bindToConnection(connection);
+			creationRequest.connectionCompleted(connection);
+
+			// Notify Circuit Create
+			if(initializationTracker != null) {
+				final int event = creationRequest.isDirectoryCircuit() ?
+						Tor.BOOTSTRAP_STATUS_ONEHOP_CREATE : Tor.BOOTSTRAP_STATUS_CIRCUIT_CREATE;
+				initializationTracker.notifyEvent(event);
+			}
+
+			// Create Circuit
+			final CircuitNode firstNode = extender.createFastTo(firstRouter);
+			creationRequest.nodeAdded(firstNode);
+
+			for(int i = 1; i < creationRequest.getPathLength(); i++) {
+				final CircuitNode extendedNode = extender.extendTo(creationRequest.getPathElement(i));
+				creationRequest.nodeAdded(extendedNode);
+			}
+			creationRequest.circuitBuildCompleted(circuit);
+
+			// Notify Done
+			if(initializationTracker != null && !creationRequest.isDirectoryCircuit()) {
+				initializationTracker.notifyEvent(Tor.BOOTSTRAP_STATUS_DONE);
+			}
 			circuit.notifyCircuitBuildCompleted();
 		} catch (ConnectionTimeoutException e) {
 			connectionFailed("Timeout connecting to "+ firstRouter);
@@ -81,48 +105,18 @@ public class CircuitBuildTask implements Runnable {
 	}
 
 	private void connectionFailed(String message) {
+		logger.info(message);
 		creationRequest.connectionFailed(message);
 		circuit.notifyCircuitBuildFailed();
 	}
 	
 	private void circuitBuildFailed(String message) {
+		logger.info(message);
 		creationRequest.circuitBuildFailed(message);
 		circuit.notifyCircuitBuildFailed();
 		if(connection != null) {
 			connection.removeCircuit(circuit);
 		}
 	}
-	
-	private void openEntryNodeConnection(Router firstRouter) throws ConnectionTimeoutException, ConnectionFailedException, ConnectionHandshakeException, InterruptedException {
-		connection = connectionCache.getConnectionTo(firstRouter, creationRequest.isDirectoryCircuit());
-		circuit.bindToConnection(connection);
-		creationRequest.connectionCompleted(connection);
-	}
 
-	private void buildCircuit(Router firstRouter) throws TorException {
-		notifyInitialization();
-		final CircuitNode firstNode = extender.createFastTo(firstRouter);
-		creationRequest.nodeAdded(firstNode);
-		
-		for(int i = 1; i < creationRequest.getPathLength(); i++) {
-			final CircuitNode extendedNode = extender.extendTo(creationRequest.getPathElement(i));
-			creationRequest.nodeAdded(extendedNode);
-		}
-		creationRequest.circuitBuildCompleted(circuit);
-		notifyDone();
-	}
-
-	private void notifyInitialization() {
-		if(initializationTracker != null) {
-			final int event = creationRequest.isDirectoryCircuit() ? 
-					Tor.BOOTSTRAP_STATUS_ONEHOP_CREATE : Tor.BOOTSTRAP_STATUS_CIRCUIT_CREATE;
-			initializationTracker.notifyEvent(event);
-		}
-	}
-
-	private void notifyDone() {
-		if(initializationTracker != null && !creationRequest.isDirectoryCircuit()) {
-			initializationTracker.notifyEvent(Tor.BOOTSTRAP_STATUS_DONE);
-		}
-	}
 }

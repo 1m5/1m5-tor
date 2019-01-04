@@ -17,16 +17,10 @@ import io.onemfive.tor.client.core.RouterStatus;
 import io.onemfive.tor.client.core.Tor;
 import io.onemfive.tor.client.core.VoteAuthorityEntry;
 import io.onemfive.tor.client.core.crypto.TorPublicKey;
-import io.onemfive.tor.client.core.crypto.TorSignature.DigestAlgorithm;
 import io.onemfive.tor.client.core.data.HexDigest;
 import io.onemfive.tor.client.core.data.Timestamp;
 import io.onemfive.tor.client.core.directory.TrustedAuthorities;
-import io.onemfive.tor.client.core.*;
-import io.onemfive.tor.client.core.crypto.TorPublicKey;
 import io.onemfive.tor.client.core.crypto.TorSignature;
-import io.onemfive.tor.client.core.data.HexDigest;
-import io.onemfive.tor.client.core.data.Timestamp;
-import io.onemfive.tor.client.core.directory.TrustedAuthorities;
 
 public class ConsensusDocumentImpl implements ConsensusDocument {
 	
@@ -105,13 +99,13 @@ public class ConsensusDocumentImpl implements ConsensusDocument {
 	void setRawDocumentData(String rawData) { rawDocumentData = rawData; }
 	
 	ConsensusDocumentImpl() {
-		clientVersions = new HashSet<String>();
-		serverVersions = new HashSet<String>();
-		knownFlags = new HashSet<String>();
-		voteAuthorityEntries = new HashMap<HexDigest, VoteAuthorityEntry>();
-		routerStatusEntries = new ArrayList<RouterStatus>();
-		bandwidthWeights = new HashMap<String, Integer>();
-		parameters = new HashMap<String, Integer>();
+		clientVersions = new HashSet<>();
+		serverVersions = new HashSet<>();
+		knownFlags = new HashSet<>();
+		voteAuthorityEntries = new HashMap<>();
+		routerStatusEntries = new ArrayList<>();
+		bandwidthWeights = new HashMap<>();
+		parameters = new HashMap<>();
 	}
 	
 	void addKnownFlag(String flag) {

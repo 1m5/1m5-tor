@@ -80,8 +80,8 @@ public class CircuitManagerImpl implements CircuitManager, DashboardRenderable {
 		}
 		this.pendingExitStreams = new PendingExitStreams(config);
 		this.circuitCreationTask = new CircuitCreationTask(config, directory, connectionCache, pathChooser, this, initializationTracker);
-		this.activeCircuits = new HashSet<CircuitImpl>();
-		this.cleanInternalCircuits = new LinkedList<InternalCircuit>();
+		this.activeCircuits = new HashSet<>();
+		this.cleanInternalCircuits = new LinkedList<>();
 		this.random = new TorRandom();
 		
 		this.initializationTracker = initializationTracker;

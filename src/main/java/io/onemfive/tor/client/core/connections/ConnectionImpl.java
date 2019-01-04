@@ -79,10 +79,10 @@ public class ConnectionImpl implements Connection, DashboardRenderable {
 		this.config = config;
 		this.socket = socket;
 		this.router = router;
-		this.circuitMap = new HashMap<Integer, Circuit>();
+		this.circuitMap = new HashMap<>();
 		this.readCellsThread = new Thread(createReadCellsRunnable());
 		this.readCellsThread.setDaemon(true);
-		this.connectionControlCells = new LinkedBlockingQueue<Cell>();
+		this.connectionControlCells = new LinkedBlockingQueue<>();
 		this.initializationTracker = tracker;
 		this.isDirectoryConnection = isDirectoryConnection;
 		initializeCurrentCircuitId();

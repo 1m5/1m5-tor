@@ -5,9 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import io.onemfive.tor.client.core.DirectoryStore;
-import io.onemfive.tor.client.core.Document;
-import io.onemfive.tor.client.core.TorConfig;
+
 import io.onemfive.tor.client.core.DirectoryStore;
 import io.onemfive.tor.client.core.Document;
 import io.onemfive.tor.client.core.TorConfig;
@@ -19,7 +17,7 @@ public class DirectoryStoreImpl implements DirectoryStore {
 
 	DirectoryStoreImpl(TorConfig config) {
 		this.config = config;
-		this.fileMap = new HashMap<CacheFile, DirectoryStoreFile>();
+		this.fileMap = new HashMap<>();
 	}
 
 	public synchronized ByteBuffer loadCacheFile(CacheFile cacheFile) {

@@ -10,10 +10,6 @@ import io.onemfive.tor.client.core.data.HexDigest;
 import io.onemfive.tor.client.core.data.IPv4Address;
 import io.onemfive.tor.client.core.directory.parsing.DocumentFieldParser;
 import io.onemfive.tor.client.core.directory.parsing.DocumentParsingHandler;
-import io.onemfive.tor.client.core.DirectoryServer;
-import io.onemfive.tor.client.core.Tor;
-import io.onemfive.tor.client.core.data.HexDigest;
-import io.onemfive.tor.client.core.data.IPv4Address;
 
 /*
  * This class contains the hardcoded 'bootstrap' directory authority

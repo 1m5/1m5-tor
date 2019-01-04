@@ -3,7 +3,6 @@ package io.onemfive.tor.client.core;
 import java.util.List;
 import java.util.Set;
 
-import io.onemfive.tor.client.core.ConsensusDocument.RequiredCertificate;
 import io.onemfive.tor.client.core.data.HexDigest;
 import io.onemfive.tor.client.core.directory.downloader.DirectoryRequestFailedException;
 

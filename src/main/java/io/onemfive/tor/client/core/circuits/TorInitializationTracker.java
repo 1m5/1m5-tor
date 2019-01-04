@@ -9,8 +9,6 @@ import java.util.logging.Logger;
 
 import io.onemfive.tor.client.core.Tor;
 import io.onemfive.tor.client.core.TorInitializationListener;
-import io.onemfive.tor.client.core.Tor;
-import io.onemfive.tor.client.core.TorInitializationListener;
 
 public class TorInitializationTracker {
 	private final static Logger logger = Logger.getLogger(TorInitializationTracker.class.getName());
@@ -33,7 +31,7 @@ public class TorInitializationTracker {
 		messageMap.put(Tor.BOOTSTRAP_STATUS_DONE, "Done");
 	}
 	
-	private final List<TorInitializationListener> listeners = new ArrayList<TorInitializationListener>();
+	private final List<TorInitializationListener> listeners = new ArrayList<>();
 	
 	private final Object stateLock = new Object();
 	private int bootstrapState = Tor.BOOTSTRAP_STATUS_STARTING;
@@ -51,10 +49,6 @@ public class TorInitializationTracker {
 		synchronized(listeners) {
 			listeners.remove(listener);
 		}
-	}
-
-	public int getBootstrapState() {
-		return bootstrapState;
 	}
 
 	public void start() {
@@ -98,7 +92,7 @@ public class TorInitializationTracker {
 	
 	private List<TorInitializationListener> getListeners() {
 		synchronized (listeners) {
-			return new ArrayList<TorInitializationListener>(listeners);
+			return new ArrayList<>(listeners);
 		}
 	}
 	

@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class TorConfigImpl implements TorConfig {
 
     private void resetDefaults() {
-        dataDirectory = toFile("~/.orchid");
+        dataDirectory = toFile("~/.tor-client");
         circuitBuildTimeout = toMS(60, TimeUnit.SECONDS);
         circuitStreamTimeout = 0;
         circuitIdleTimeout = toMS(1, TimeUnit.HOURS);

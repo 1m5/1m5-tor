@@ -68,7 +68,10 @@ public class DirectoryDownloadTask implements Runnable {
 		directory.waitUntilLoaded();
 		setCurrentConsensus(directory.getCurrentConsensusDocument());
 		while (!isStopped) {
-			checkCertificates();
+			if (!isDownloadingCertificates && !directory.getRequiredCertificates().isEmpty()) {
+				isDownloadingCertificates = true;
+				executor.execute(new DownloadCertificatesTask());
+			}
 			checkConsensus();
 			checkDescriptors();
 			try {
@@ -80,17 +83,7 @@ public class DirectoryDownloadTask implements Runnable {
 		}
 	}
 
-	private void checkCertificates() {
-		if (isDownloadingCertificates
-				|| directory.getRequiredCertificates().isEmpty()) {
-			return;
-		}
-
-		isDownloadingCertificates = true;
-		executor.execute(new DownloadCertificatesTask());
-	}
-
-	void setCurrentConsensus(ConsensusDocument consensus) {
+	private void setCurrentConsensus(ConsensusDocument consensus) {
 		if (consensus != null) {
 			currentConsensus = consensus;
 			consensusDownloadTime = chooseDownloadTimeForConsensus(consensus);
@@ -195,8 +188,8 @@ public class DirectoryDownloadTask implements Runnable {
 		private final Set<HexDigest> fingerprints;
 		private final boolean useMicrodescriptors;
 		
-		public DownloadRouterDescriptorsTask(Collection<HexDigest> fingerprints, boolean useMicrodescriptors) {
-			this.fingerprints = new HashSet<HexDigest>(fingerprints);
+		DownloadRouterDescriptorsTask(Collection<HexDigest> fingerprints, boolean useMicrodescriptors) {
+			this.fingerprints = new HashSet<>(fingerprints);
 			this.useMicrodescriptors = useMicrodescriptors;
 		}
 		
