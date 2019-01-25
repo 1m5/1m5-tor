@@ -5,7 +5,7 @@
 
 	<groupId>io.onemfive</groupId>
 	<artifactId>tor-client</artifactId>
-	<version>0.5.2-SNAPSHOT</version>
+	<version>0.6.0</version>
 
 	<packaging>jar</packaging>
 
@@ -16,7 +16,7 @@
 
 	<name>1m5-tor-client</name>
 	<url>https://1m5.io</url>
-	<description>Invisible Matrix Services Tor Client Library</description>
+	<description>Invisible Matrix Services - Tor Client Sensor Library</description>
 	<inceptionYear>2017</inceptionYear>
 	<organization>
 		<name>1M5</name>
@@ -31,9 +31,7 @@
 	<developers>
 		<developer>
 			<name>objectorange</name>
-			<organization>Resolving Architecture</organization>
-			<url>http://resolvingarchitecture.gaiagloaming.io</url>
-			<email>1m5@protonmail.com</email>
+			<email>objectorange@1m5.io</email>
 		</developer>
 	</developers>
 	<scm>
@@ -46,19 +44,19 @@
 		<profile>
 			<id>Development</id>
 			<properties>
-
+				<isTest>true</isTest>
 			</properties>
 		</profile>
 		<profile>
 			<id>QA</id>
 			<properties>
-
+				<isTest>false</isTest>
 			</properties>
 		</profile>
 		<profile>
 			<id>Production</id>
 			<properties>
-
+				<isTest>false</isTest>
 			</properties>
 		</profile>
 	</profiles>
