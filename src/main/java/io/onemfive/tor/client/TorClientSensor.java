@@ -1,27 +1,23 @@
 package io.onemfive.tor.client;
 
+import io.onemfive.clearnet.client.ClearnetClientSensor;
 import io.onemfive.data.Envelope;
-import io.onemfive.sensors.BaseSensor;
-import io.onemfive.sensors.SensorStatus;
-import io.onemfive.tor.client.core.TorClient;
-import io.onemfive.tor.client.core.TorInitializationListener;
 
-import java.util.Properties;
+import java.net.*;
 import java.util.logging.Logger;
 
 /**
- * https://www.torproject.org/
- * https://subgraph.com/orchid/index.en.html
+ * Sets up an HttpClientSensor with the local Tor instance as a proxy (127.0.0.1:9150).
  *
  * @author objectorange
  */
-public final class TorClientSensor extends BaseSensor implements TorInitializationListener {
+public final class TorClientSensor extends ClearnetClientSensor {
 
     private static final Logger LOG = Logger.getLogger(TorClientSensor.class.getName());
 
-    private TorClient client = new TorClient();
-
-    public TorClientSensor() {}
+    public TorClientSensor() {
+        proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("127.0.0.1",9150));
+    }
 
     public String[] getOperationEndsWith() {
         return new String[]{".onion"};
@@ -37,91 +33,14 @@ public final class TorClientSensor extends BaseSensor implements TorInitializati
         return new String[]{".onion"};
     }
 
-
-    @Override
-    public boolean send(Envelope envelope) {
-        return false;
-    }
-
-    @Override
-    public boolean reply(Envelope envelope) {
-        return false;
-    }
-
-    @Override
-    public boolean start(Properties properties) {
-        LOG.info("Starting...");
-        updateStatus(SensorStatus.STARTING);
-        client.addInitializationListener(this);
-        client.start();
-        client.enableSocksListener();
-        return true;
-    }
-
-
-    @Override
-    public boolean pause() {
-        return false;
-    }
-
-    @Override
-    public boolean unpause() {
-        return false;
-    }
-
-    @Override
-    public boolean restart() {
-        return false;
-    }
-
-    @Override
-    public boolean shutdown() {
-        updateStatus(SensorStatus.SHUTTING_DOWN);
-        client.stop();
-        updateStatus(SensorStatus.SHUTDOWN);
-        return true;
-    }
-
-    @Override
-    public boolean gracefulShutdown() {
-        updateStatus(SensorStatus.GRACEFULLY_SHUTTING_DOWN);
-        client.stop();
-        updateStatus(SensorStatus.GRACEFULLY_SHUTDOWN);
-        return true;
-    }
-
-
-    public void initializationProgress(String message, int percent) {
-        updateStatus(SensorStatus.NETWORK_WARMUP);
-        System.out.println(">>> [ "+ percent + "% ]: "+ message);
-    }
-
-    public void initializationCompleted() {
-        updateStatus(SensorStatus.NETWORK_CONNECTED);
-        System.out.println("Tor is ready to go!");
-    }
-
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+//        URL url = new URL("https://1m5.io");
+        URL url = new URL("https://3g2upl4pq6kufc4m.onion/?q=1m5&ia=web");
+        Envelope e = Envelope.documentFactory();
+        e.setAction(Envelope.Action.VIEW);
+        e.setURL(url);
         TorClientSensor sensor = new TorClientSensor();
         sensor.start(null);
-        while(sensor.getStatus()==SensorStatus.STARTING || sensor.getStatus()==SensorStatus.NETWORK_WARMUP) {
-            LOG.info("...waiting on startup...");
-            try {
-                synchronized (sensor) {
-                    sensor.wait(1 * 60 * 1000);
-                }
-            } catch (InterruptedException ex) {
-            }
-        }
-
-        while(sensor.getStatus()!=SensorStatus.SHUTTING_DOWN || sensor.getStatus()!=SensorStatus.GRACEFULLY_SHUTTING_DOWN) {
-            LOG.info("...running...");
-            try {
-                synchronized (sensor) {
-                    sensor.wait(1 * 60 * 1000);
-                }
-            } catch (InterruptedException ex) {
-            }
-        }
+        sensor.send(e);
     }
 }
