@@ -1,6 +1,7 @@
 # 1m5-tor
 Tor Sensor
-https://tor.stackexchange.com/questions/13763/how-can-i-figure-out-how-to-use-tor-in-my-java-application
 
-## Threat Counter-Measures
-* meek: https://tor.stackexchange.com/questions/14170/in-china-meek-azure-and-meek-amazon-can-not-be-used-the-following-is-the-log
+## Tor Integration
+Tor Sensor requires installing Tor Browser as it's the recommended service for using the Tor network.
+This is accomplished by the 1M5 Tor Sensor by using the local Tor Browser's SOCKSv5 proxy address and port.
+If you do not have Tor Browser installed, please do so: https://www.torproject.org/download/download.html.en
