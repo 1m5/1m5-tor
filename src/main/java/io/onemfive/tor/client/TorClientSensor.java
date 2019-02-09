@@ -3,8 +3,6 @@ package io.onemfive.tor.client;
 import io.onemfive.data.Envelope;
 import io.onemfive.sensors.BaseSensor;
 import io.onemfive.sensors.SensorStatus;
-import io.onemfive.tor.client.core.TorClient;
-import io.onemfive.tor.client.core.TorInitializationListener;
 
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -12,14 +10,15 @@ import java.util.logging.Logger;
 /**
  * https://www.torproject.org/
  * https://subgraph.com/orchid/index.en.html
+ * https://github.com/bisq-network/bitcoinj
  *
  * @author objectorange
  */
-public final class TorClientSensor extends BaseSensor implements TorInitializationListener {
+public final class TorClientSensor extends BaseSensor {
 
     private static final Logger LOG = Logger.getLogger(TorClientSensor.class.getName());
 
-    private TorClient client = new TorClient();
+//    private TorClient client = new TorClient();
 
     public TorClientSensor() {}
 
@@ -52,9 +51,7 @@ public final class TorClientSensor extends BaseSensor implements TorInitializati
     public boolean start(Properties properties) {
         LOG.info("Starting...");
         updateStatus(SensorStatus.STARTING);
-        client.addInitializationListener(this);
-        client.start();
-        client.enableSocksListener();
+
         return true;
     }
 
@@ -77,7 +74,7 @@ public final class TorClientSensor extends BaseSensor implements TorInitializati
     @Override
     public boolean shutdown() {
         updateStatus(SensorStatus.SHUTTING_DOWN);
-        client.stop();
+//        client.stop();
         updateStatus(SensorStatus.SHUTDOWN);
         return true;
     }
@@ -85,7 +82,7 @@ public final class TorClientSensor extends BaseSensor implements TorInitializati
     @Override
     public boolean gracefulShutdown() {
         updateStatus(SensorStatus.GRACEFULLY_SHUTTING_DOWN);
-        client.stop();
+//        client.stop();
         updateStatus(SensorStatus.GRACEFULLY_SHUTDOWN);
         return true;
     }
