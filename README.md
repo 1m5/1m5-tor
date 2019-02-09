@@ -2,6 +2,11 @@
 Tor Sensor
 
 ## Tor Integration
-Tor Sensor requires installing Tor Browser as it's the recommended service for using the Tor network.
+Tor Sensor requires installing Tor Browser or running Tor as a daemon.
 This is accomplished by the 1M5 Tor Sensor by using the local Tor Browser's SOCKSv5 proxy address and port.
-If you do not have Tor Browser installed, please do so: https://www.torproject.org/download/download.html.en
+If you do not have Tor installed: 
+
+Tor Browser: https://www.torproject.org/download/download.html.en
+Or as a daemon: 
+1. sudo apt-get install tor
+2. tor
