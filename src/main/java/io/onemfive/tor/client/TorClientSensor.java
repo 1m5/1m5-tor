@@ -4,7 +4,10 @@ import io.onemfive.clearnet.client.ClearnetClientSensor;
 import io.onemfive.data.Envelope;
 import io.onemfive.data.Message;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.*;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
@@ -19,6 +22,8 @@ public final class TorClientSensor extends ClearnetClientSensor {
     public TorClientSensor() {
         proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("127.0.0.1",9150));
     }
+
+    private File sensorDir;
 
     public String[] getOperationEndsWith() {
         return new String[]{".onion"};
@@ -44,6 +49,31 @@ public final class TorClientSensor extends ClearnetClientSensor {
             }
         }
         return successful;
+    }
+
+    @Override
+    public boolean start(Properties properties) {
+        if(super.start(properties)) {
+            String sensorsDirStr = properties.getProperty("1m5.dir.sensors");
+            if(sensorsDirStr==null) {
+                LOG.warning("1m5.dir.sensors property is null. Please set prior to instantiating Tor Client Sensor.");
+                return false;
+            }
+            try {
+                sensorDir = new File(new File(sensorsDirStr).getCanonicalPath()+"/tor");
+                if(!sensorDir.exists() && !sensorDir.mkdir()) {
+                    LOG.warning("Unable to create Tor sensor directory.");
+                    return false;
+                } else {
+                    properties.put("1m5.dir.sensors.tor",sensorDir.getCanonicalPath());
+                }
+            } catch (IOException e) {
+                LOG.warning("IOException caught while building Tor sensor directory: \n"+e.getLocalizedMessage());
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 
     public static void main(String[] args) throws Exception {
