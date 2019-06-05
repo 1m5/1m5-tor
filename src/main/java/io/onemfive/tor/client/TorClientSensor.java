@@ -54,13 +54,14 @@ public final class TorClientSensor extends ClearnetClientSensor {
     @Override
     public boolean start(Properties properties) {
         if(super.start(properties)) {
+            LOG.info("Starting Tor Client Sensor...");
             String sensorsDirStr = properties.getProperty("1m5.dir.sensors");
             if(sensorsDirStr==null) {
                 LOG.warning("1m5.dir.sensors property is null. Please set prior to instantiating Tor Client Sensor.");
                 return false;
             }
             try {
-                sensorDir = new File(new File(sensorsDirStr).getCanonicalPath()+"/tor");
+                sensorDir = new File(new File(sensorsDirStr),"tor");
                 if(!sensorDir.exists() && !sensorDir.mkdir()) {
                     LOG.warning("Unable to create Tor sensor directory.");
                     return false;
@@ -72,8 +73,10 @@ public final class TorClientSensor extends ClearnetClientSensor {
                 return false;
             }
             return true;
+        } else {
+            LOG.warning("Clearnet Client Sensor failed to start. Unable to start Tor Client Sensor.");
+            return false;
         }
-        return false;
     }
 
     public static void main(String[] args) throws Exception {
