@@ -20,6 +20,7 @@ public final class TorClientSensor extends ClearnetClientSensor {
     private static final Logger LOG = Logger.getLogger(TorClientSensor.class.getName());
 
     public TorClientSensor() {
+        // Setup local Tor instance as proxy for Tor Client
         proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("127.0.0.1",9150));
     }
 
@@ -42,6 +43,8 @@ public final class TorClientSensor extends ClearnetClientSensor {
     @Override
     public boolean send(Envelope e) {
         boolean successful = super.send(e);
+        // Change flag to NONE so Client Server Sensor will pick it back up
+        e.setSensitivity(Envelope.Sensitivity.NONE);
         Message m = e.getMessage();
         if(m!=null && m.getErrorMessages()!=null && m.getErrorMessages().size()>0) {
             for(String err : m.getErrorMessages()) {
@@ -49,6 +52,11 @@ public final class TorClientSensor extends ClearnetClientSensor {
             }
         }
         return successful;
+    }
+
+    @Override
+    public boolean reply(Envelope e) {
+        return super.reply(e);
     }
 
     @Override
