@@ -87,14 +87,4 @@ public final class TorClientSensor extends ClearnetClientSensor {
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        URL url = new URL("https://1m5.io");
-//        URL url = new URL("https://3g2upl4pq6kufc4m.onion/?q=1m5&ia=web");
-        Envelope e = Envelope.documentFactory();
-        e.setAction(Envelope.Action.VIEW);
-        e.setURL(url);
-        TorClientSensor sensor = new TorClientSensor();
-        sensor.start(null);
-        sensor.send(e);
-    }
 }
