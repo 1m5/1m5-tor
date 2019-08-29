@@ -65,6 +65,13 @@ public final class TorClientSensor extends ClearnetClientSensor {
                                 blocked = true;
                                 break;
                             }
+                            case "408": {
+                                // Request Timeout
+                                LOG.info("Received HTTP 408 response (Tor): Request Timeout. Tor Sensor considered blocked.");
+                                updateStatus(SensorStatus.NETWORK_BLOCKED);
+                                blocked = true;
+                                break;
+                            }
                             case "410": {
                                 // Gone
                                 LOG.info("Received HTTP 410 response (Tor): Gone. Tor Sensor considered blocked.");
