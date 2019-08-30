@@ -43,11 +43,14 @@ public final class TorClientSensor extends ClearnetClientSensor {
 
     @Override
     public boolean send(Envelope e) {
+        LOG.info("Tor Sensor sending request...");
         boolean successful = super.send(e);
         if(successful) {
+            LOG.info("Tor Sensor successful response received.");
             // Change flag to NONE so Client Server Sensor will pick it back up
             e.setSensitivity(Envelope.Sensitivity.NONE);
             if(!getStatus().equals(SensorStatus.NETWORK_CONNECTED)) {
+                LOG.info("Tor Network status changed back to CONNECTED.");
                 updateStatus(SensorStatus.NETWORK_CONNECTED);
             }
         }
