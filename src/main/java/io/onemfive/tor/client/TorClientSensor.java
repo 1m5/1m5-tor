@@ -50,61 +50,62 @@ public final class TorClientSensor extends ClearnetClientSensor {
             if(!getStatus().equals(SensorStatus.NETWORK_CONNECTED)) {
                 updateStatus(SensorStatus.NETWORK_CONNECTED);
             }
-        } else {
-            Message m = e.getMessage();
-            if(m!=null && m.getErrorMessages()!=null && m.getErrorMessages().size()>0) {
-                boolean blocked = false;
-                for (String err : m.getErrorMessages()) {
-                    LOG.warning("HTTP Error Message (Tor): " + err);
-                    if(!blocked) {
-                        switch (err) {
-                            case "403": {
-                                // Forbidden
-                                LOG.info("Received HTTP 403 response (Tor): Forbidden. Tor Sensor considered blocked.");
-                                updateStatus(SensorStatus.NETWORK_BLOCKED);
-                                blocked = true;
-                                break;
-                            }
-                            case "408": {
-                                // Request Timeout
-                                LOG.info("Received HTTP 408 response (Tor): Request Timeout. Tor Sensor considered blocked.");
-                                updateStatus(SensorStatus.NETWORK_BLOCKED);
-                                blocked = true;
-                                break;
-                            }
-                            case "410": {
-                                // Gone
-                                LOG.info("Received HTTP 410 response (Tor): Gone. Tor Sensor considered blocked.");
-                                updateStatus(SensorStatus.NETWORK_BLOCKED);
-                                blocked = true;
-                                break;
-                            }
-                            case "418": {
-                                // I'm a teapot
-                                LOG.warning("Received HTTP 418 response (Tor): I'm a teapot. Tor Sensor ignoring.");
-                                break;
-                            }
-                            case "451": {
-                                // Unavailable for legal reasons; your IP address might be denied access to the resource
-                                LOG.info("Received HTTP 451 response (Tor): unavailable for legal reasons. Tor Sensor considered blocked.");
-                                // Notify Sensor Manager Tor is getting blocked
-                                updateStatus(SensorStatus.NETWORK_BLOCKED);
-                                blocked = true;
-                                break;
-                            }
-                            case "511": {
-                                // Network Authentication Required
-                                LOG.info("Received HTTP511 response (Tor): network authentication required. Tor Sensor considered blocked.");
-                                updateStatus(SensorStatus.NETWORK_BLOCKED);
-                                blocked = true;
-                                break;
-                            }
+        }
+        return successful;
+    }
+
+    protected void handleFailure(Message m) {
+        if(m!=null && m.getErrorMessages()!=null && m.getErrorMessages().size()>0) {
+            boolean blocked = false;
+            for (String err : m.getErrorMessages()) {
+                LOG.warning("HTTP Error Message (Tor): " + err);
+                if(!blocked) {
+                    switch (err) {
+                        case "403": {
+                            // Forbidden
+                            LOG.info("Received HTTP 403 response (Tor): Forbidden. Tor Sensor considered blocked.");
+                            updateStatus(SensorStatus.NETWORK_BLOCKED);
+                            blocked = true;
+                            break;
+                        }
+                        case "408": {
+                            // Request Timeout
+                            LOG.info("Received HTTP 408 response (Tor): Request Timeout. Tor Sensor considered blocked.");
+                            updateStatus(SensorStatus.NETWORK_BLOCKED);
+                            blocked = true;
+                            break;
+                        }
+                        case "410": {
+                            // Gone
+                            LOG.info("Received HTTP 410 response (Tor): Gone. Tor Sensor considered blocked.");
+                            updateStatus(SensorStatus.NETWORK_BLOCKED);
+                            blocked = true;
+                            break;
+                        }
+                        case "418": {
+                            // I'm a teapot
+                            LOG.warning("Received HTTP 418 response (Tor): I'm a teapot. Tor Sensor ignoring.");
+                            break;
+                        }
+                        case "451": {
+                            // Unavailable for legal reasons; your IP address might be denied access to the resource
+                            LOG.info("Received HTTP 451 response (Tor): unavailable for legal reasons. Tor Sensor considered blocked.");
+                            // Notify Sensor Manager Tor is getting blocked
+                            updateStatus(SensorStatus.NETWORK_BLOCKED);
+                            blocked = true;
+                            break;
+                        }
+                        case "511": {
+                            // Network Authentication Required
+                            LOG.info("Received HTTP511 response (Tor): network authentication required. Tor Sensor considered blocked.");
+                            updateStatus(SensorStatus.NETWORK_BLOCKED);
+                            blocked = true;
+                            break;
                         }
                     }
                 }
             }
         }
-        return successful;
     }
 
     @Override
