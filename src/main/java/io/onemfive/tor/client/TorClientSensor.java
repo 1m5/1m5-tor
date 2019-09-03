@@ -3,7 +3,9 @@ package io.onemfive.tor.client;
 import io.onemfive.clearnet.client.ClearnetClientSensor;
 import io.onemfive.data.Envelope;
 import io.onemfive.data.Message;
+import io.onemfive.data.util.DLC;
 import io.onemfive.sensors.SensorStatus;
+import io.onemfive.sensors.SensorsService;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +24,7 @@ public final class TorClientSensor extends ClearnetClientSensor {
 
     public TorClientSensor() {
         // Setup local Tor instance as proxy for Tor Client
-        proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("127.0.0.1",9150));
+        proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("127.0.0.1",9050));
     }
 
     private File sensorDir;
@@ -47,8 +49,9 @@ public final class TorClientSensor extends ClearnetClientSensor {
         boolean successful = super.send(e);
         if(successful) {
             LOG.info("Tor Sensor successful response received.");
-            // Change flag to NONE so Client Server Sensor will pick it back up
+            // Change flag to None so Client Server Sensor will pick it back up
             e.setSensitivity(Envelope.Sensitivity.NONE);
+            DLC.addRoute(SensorsService.class, SensorsService.OPERATION_REPLY, e);
             if(!getStatus().equals(SensorStatus.NETWORK_CONNECTED)) {
                 LOG.info("Tor Network status changed back to CONNECTED.");
                 updateStatus(SensorStatus.NETWORK_CONNECTED);
