@@ -8,5 +8,5 @@ If you do not have Tor installed:
 
 Tor Browser: https://www.torproject.org/download/download.html.en
 Or as a daemon: 
-1. sudo apt-get install tor
+1. sudo apt install tor
 2. tor
