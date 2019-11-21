@@ -3,6 +3,9 @@ package io.onemfive.tor.client;
 import io.onemfive.clearnet.client.ClearnetClientSensor;
 import io.onemfive.data.Envelope;
 import io.onemfive.data.Message;
+import io.onemfive.data.util.DLC;
+import io.onemfive.sensors.SensorStatus;
+import io.onemfive.sensors.SensorsService;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +24,7 @@ public final class TorClientSensor extends ClearnetClientSensor {
 
     public TorClientSensor() {
         // Setup local Tor instance as proxy for Tor Client
-        proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("127.0.0.1",9150));
+        proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("127.0.0.1",9050));
     }
 
     private File sensorDir;
@@ -42,16 +45,73 @@ public final class TorClientSensor extends ClearnetClientSensor {
 
     @Override
     public boolean send(Envelope e) {
+        LOG.info("Tor Sensor sending request...");
         boolean successful = super.send(e);
-        // Change flag to NONE so Client Server Sensor will pick it back up
-        e.setSensitivity(Envelope.Sensitivity.NONE);
-        Message m = e.getMessage();
-        if(m!=null && m.getErrorMessages()!=null && m.getErrorMessages().size()>0) {
-            for(String err : m.getErrorMessages()) {
-                LOG.warning(err);
+        if(successful) {
+            LOG.info("Tor Sensor successful response received.");
+            // Change flag to None so Client Server Sensor will pick it back up
+            e.setSensitivity(Envelope.Sensitivity.NONE);
+            DLC.addRoute(SensorsService.class, SensorsService.OPERATION_REPLY, e);
+            if(!getStatus().equals(SensorStatus.NETWORK_CONNECTED)) {
+                LOG.info("Tor Network status changed back to CONNECTED.");
+                updateStatus(SensorStatus.NETWORK_CONNECTED);
             }
         }
         return successful;
+    }
+
+    protected void handleFailure(Message m) {
+        if(m!=null && m.getErrorMessages()!=null && m.getErrorMessages().size()>0) {
+            boolean blocked = false;
+            for (String err : m.getErrorMessages()) {
+                LOG.warning("HTTP Error Message (Tor): " + err);
+                if(!blocked) {
+                    switch (err) {
+                        case "403": {
+                            // Forbidden
+                            LOG.info("Received HTTP 403 response (Tor): Forbidden. Tor Sensor considered blocked.");
+                            updateStatus(SensorStatus.NETWORK_BLOCKED);
+                            blocked = true;
+                            break;
+                        }
+                        case "408": {
+                            // Request Timeout
+                            LOG.info("Received HTTP 408 response (Tor): Request Timeout. Tor Sensor considered blocked.");
+                            updateStatus(SensorStatus.NETWORK_BLOCKED);
+                            blocked = true;
+                            break;
+                        }
+                        case "410": {
+                            // Gone
+                            LOG.info("Received HTTP 410 response (Tor): Gone. Tor Sensor considered blocked.");
+                            updateStatus(SensorStatus.NETWORK_BLOCKED);
+                            blocked = true;
+                            break;
+                        }
+                        case "418": {
+                            // I'm a teapot
+                            LOG.warning("Received HTTP 418 response (Tor): I'm a teapot. Tor Sensor ignoring.");
+                            break;
+                        }
+                        case "451": {
+                            // Unavailable for legal reasons; your IP address might be denied access to the resource
+                            LOG.info("Received HTTP 451 response (Tor): unavailable for legal reasons. Tor Sensor considered blocked.");
+                            // Notify Sensor Manager Tor is getting blocked
+                            updateStatus(SensorStatus.NETWORK_BLOCKED);
+                            blocked = true;
+                            break;
+                        }
+                        case "511": {
+                            // Network Authentication Required
+                            LOG.info("Received HTTP511 response (Tor): network authentication required. Tor Sensor considered blocked.");
+                            updateStatus(SensorStatus.NETWORK_BLOCKED);
+                            blocked = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -87,14 +147,4 @@ public final class TorClientSensor extends ClearnetClientSensor {
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        URL url = new URL("https://1m5.io");
-//        URL url = new URL("https://3g2upl4pq6kufc4m.onion/?q=1m5&ia=web");
-        Envelope e = Envelope.documentFactory();
-        e.setAction(Envelope.Action.VIEW);
-        e.setURL(url);
-        TorClientSensor sensor = new TorClientSensor();
-        sensor.start(null);
-        sensor.send(e);
-    }
 }
